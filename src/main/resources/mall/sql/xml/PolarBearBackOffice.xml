@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mall.web.mapper.admin.PolarBearBackOfficeServiceMapper">
+
+	<!-- <select id="getBenList" resultType="benlist.model.TB_TAXBILLPUBlICATION_INSERT"> -->
+	<insert id="supplierInsert" parameterType="mall.web.domain.TB_TAXBILLPUBlICATION_INSERT">
+ 		INSERT INTO 
+			POLARBEAR.TB_POLARBEAR_SUPPLIERINSERT(
+				INSERT_NUM,
+				INVOICERCORPNUM_INSERT,
+				INVOICERTAXREGID_INSERT,
+				INVOICERCORPNAME_INSERT,
+				INVOICERCEONAME_INSERT,
+				INVOICERADDR_INSERT,
+				INVOICERBIZTYPE_INSERT,
+				INVOICERBIZCLASS_INSERT,
+				INVOICERCONTACTNAME_INSERT,
+				INVOICERTEL_INSERT,
+				INVOICEREMAIL_INSERT,
+				DATE_INSERT
+			) VALUES (
+				POLARBEAR.SEQ_POLARBEAR_SUPPLIERINSERT.NEXTVAL,
+				#{invoicerCorpNum_insert},
+				#{invoicerTaxRegID_insert},
+				#{invoicerCorpName_insert},
+				#{invoicerCEOName_insert},
+				#{invoicerAddr_insert},
+				#{invoicerBizType_insert},
+				#{invoicerBizClass_insert},
+				#{invoicerContactName_insert},
+				#{invoicerTEL_insert},
+				#{invoicerEmail_insert},
+				SYSDATE
+			) 
+	</insert>
+	 
+	 <select id="supplierList"  parameterType="mall.web.domain.TB_TAXBILLPUBlICATION_INSERT"  resultType="mall.web.domain.TB_TAXBILLPUBlICATION_INSERT">
+	 	select
+	 		 * 
+	 	from 
+	 	POLARBEAR.TB_POLARBEAR_SUPPLIERINSERT
+	 	order by INSERT_NUM
+	 </select>
+	 
+	 <select id="supplierDetail"  parameterType="mall.web.domain.TB_TAXBILLPUBlICATION_INSERT"  resultType="mall.web.domain.TB_TAXBILLPUBlICATION_INSERT">
+	 	select
+	 		 * 
+	 	from 
+	 	POLARBEAR.TB_POLARBEAR_SUPPLIERINSERT
+	 	where INSERT_NUM = #{supplierSelect}
+	 </select>
+	 
+	 <select id="taxInvoiceUserCheck" resultType="String">
+	 	SELECT
+	 		 ID
+	 	FROM 
+	 	POLARBEAR.TB_ODTAXINFO_TAXINVOICE
+	 	WHERE ORDER_NUM = #{orderNum}
+	 </select>
+	 
+	 <!-- 결제 리스트에서 한개만 체크하고 세금계산서 발행했을경우 -->
+	 <select id="taxInvoiceSingleAction"  parameterType="mall.web.domain.TB_ODTAXINFO_TAXINVOICE"  resultType="mall.web.domain.TB_ODTAXINFO_TAXINVOICE">
+	 	SELECT 
+		 	 A.ORDER_DTNUM
+			,A.ORDER_NUM
+			,A.PD_CODE
+			,A.PD_NAME
+			,A.PD_PRICE
+			,A.PDDC_GUBN
+			,A.PDDC_VAL
+			,A.ORDER_QTY
+			,A.ORDER_AMT
+			,A.DLVY_AMT
+			,A.USE_SVMN
+			,A.OCCUR_SVMN
+			,A.ORDER_CON
+			,A.PAY_METD
+			,A.PAY_MDKY
+			,A.DLVY_CON
+			,A.DLVY_COM
+			,A.DLVY_TDN
+			,A.CNCL_CON
+			,A.RFND_CON
+			,A.REGP_ID
+			,A.MODP_ID
+			,A.DEL_YN
+			,A.PAY_DATE
+			,A.PD_CUT_SEQ
+			,A.OPTION_CODE
+			,A.BOX_PDDC_GUBN
+			,A.BOX_PDDC_VAL
+			,A.INPUT_CNT
+			,A.MBDC_VAL
+			,A.SUPR_ID
+			,A.OPTION1_NAME
+			,A.OPTION1_VALUE
+			,A.OPTION2_NAME
+			,A.OPTION2_VALUE
+			,A.LINK_MODP_DATE
+			,A.LINK_ORDER_KEY
+			,A.DLVY_TDN_MODP_DATE
+			,A.OPTION3_NAME
+			,A.OPTION3_VALUE
+			,A.CNCL_MSG
+			,A.RFND_AMT
+			,A.RFND_DLVY_AMT
+			,A.RFND_DLVY_TDN
+			,A.SETPD_CODE
+			,A.IMSI_DLVY_AMT
+			,B.ID
+			,B.INVOICEECORPNUM
+			,B.INVOICEECORPNAME
+			,B.INVOICEECEONAME
+			,B.POSTALCODE
+			,B.INVOICEEADDR
+			,B.INVOICEEBIZTYPE
+			,B.INVOICEEBIZCLASS
+			,B.INVOICEECONTACTNAME
+			,B.INVOICEEEMAIL
+			,B.INVOICEETEL
+			,B.PAYMENT
+			,B.INVOICEEE_REG_DTM 
+			,TO_CHAR(B.INVOICEEE_REG_DTM, 'MM') AS writedatemon
+			,TO_CHAR(B.INVOICEEE_REG_DTM, 'DD') AS writedateday
+	 	FROM POLARBEAR.TB_ODINFOXD A, POLARBEAR.TB_ODTAXINFO_TAXINVOICE B
+       	WHERE A.ORDER_NUM = B.ORDER_NUM
+       	AND A.REGP_ID = #{REGP_ID}
+       	AND A.ORDER_NUM = #{ORDER_NUM}
+	 </select>
+	 
+	 <!-- 결제 리스트에서 여러개 체크하고 세금계산서 발행했을경우 -->
+	 <select id="taxInvoiceSingleMuchAction" parameterType="mall.web.domain.TB_ODTAXINFO_TAXINVOICE"  resultType="mall.web.domain.TB_ODTAXINFO_TAXINVOICE">
+	 	SELECT * FROM 
+	       	POLARBEAR.TB_ODINFOXD A, POLARBEAR.TB_ODTAXINFO_TAXINVOICE B
+	       	WHERE A.ORDER_NUM = B.ORDER_NUM
+	       	AND A.REGP_ID = #{REGP_ID}
+			AND (1 != 1 
+				<foreach collection="ORDER_NUM" item="ORDER_NUM" index="index" separator="" open="" close="">
+					OR A.ORDER_NUM = #{ORDER_NUM}
+				</foreach>
+			) ORDER BY A.ORDER_NUM desc
+	 </select>
+	 
+	 <!-- 결제 리스트에서 현금영수증 발급하기 -->
+	 <select id="CashReceiptPublicationSingle"  parameterType="mall.web.domain.TB_ODTAXINFO_CASHRECEIPT"  resultType="mall.web.domain.TB_ODTAXINFO_CASHRECEIPT">
+	 	SELECT * FROM 
+       	POLARBEAR.TB_ODINFOXD A, POLARBEAR.TB_ODTAXINFO_CASHRECEIPT B
+       	WHERE A.ORDER_NUM = B.ORDER_NUM
+       	AND A.REGP_ID = #{REGP_ID}
+       	AND A.ORDER_NUM = #{ORDER_NUM}
+	 </select>
+	 
+	 <!-- 세금계산서 완료시 -->
+	 <update id="SuccessTaxBillPublicationUpdate">
+	 	UPDATE
+			POLARBEAR.TB_ODTAXINFO_TAXINVOICE
+		SET  
+		    PAYMENT = 'Y'
+		WHERE ORDER_NUM = #{ORDER_NUM_List}
+	 </update>
+	 
+	 <!-- 세금계산서 완료시 -->
+	 <update id="SuccessCashReceiptPublicationUpdate">
+	 	UPDATE
+			POLARBEAR.TB_ODTAXINFO_CASHRECEIPT
+		SET  
+		    PAYMENT = 'Y'
+		WHERE ORDER_NUM = #{ORDER_NUM}
+	 </update>
+	 
+	 <!-- id 기준으로 사용자 이름 가져오기 -->
+	 <select id="getOrderUserName_CashReceiptPublication" resultType="String">
+       	SELECT MEMB_NAME FROM 
+       	POLARBEAR.TB_MBINFOXM tm 
+       	WHERE MEMB_ID = #{orderUserId}
+	 </select>
+	 
+</mapper>
